@@ -44,6 +44,14 @@ contract ZkBNBTest is ZkBNB {
       );
   }
 
+  function getLastCommittedBlockData(StoredBlockInfo memory _previousBlock, CommitBlockInfo memory _newBlock)
+    external
+    view
+    returns (StoredBlockInfo memory storedNewBlock)
+  {
+    return commitOneBlock(_previousBlock, _newBlock);
+  }
+
   function _fallback() internal {
     address _target = address(additionalZkBNB);
     assembly {
