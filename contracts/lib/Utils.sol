@@ -45,6 +45,11 @@ library Utils {
   /// @param _amount Amount of tokens to transfer
   /// @return bool flag indicating that transfer is successful
   function transferFromERC20(IERC20 _token, address _from, address _to, uint256 _amount) internal returns (bool) {
+    // for gas reasion: check allowance first and return false straight away
+    if (_token.allowance(_from, msg.sender) < _amount) {
+      return false;
+    }
+
     (bool callSuccess, bytes memory callReturnValueEncoded) = address(_token).call(
       abi.encodeWithSignature("transferFrom(address,address,uint256)", _from, _to, _amount)
     );

@@ -59,6 +59,10 @@ describe('AssetGovernance', function () {
       mockGovernance.totalAssets.returns(listingCap - 1);
       mockListingToken.transferFrom.returns(true);
 
+      // allowance not enough
+      await expect(assetGovernance.addAsset(mockAssetsToken.address)).to.reverted;
+
+      mockListingToken.allowance.returns(listingFee);
       await expect(assetGovernance.addAsset(mockAssetsToken.address)).not.to.reverted;
     });
     it('should emit TokenListerUpdate event', async function () {
@@ -78,6 +82,7 @@ describe('AssetGovernance', function () {
 
       mockListingToken.transferFrom.returns(true);
       mockListingToken.transferFrom.returns(true);
+      mockListingToken.allowance.returns(listingFee);
       await assetGovernance.addAsset(mockAssetsToken.address);
       expect(mockListingToken.transferFrom).to.have.been.calledWith(owner.address, treasury, listingFee);
     });
@@ -134,6 +139,7 @@ describe('AssetGovernance', function () {
       it('should able to change listing cap', async () => {
         mockGovernance.totalAssets.returns(listingCap + 1);
         mockListingToken.transferFrom.returns(true);
+        mockListingToken.allowance.returns(listingFee);
 
         await expect(assetGovernance.addAsset(mockAssetsToken.address)).to.revertedWith("can't add more tokens");
         await assetGovernance.setListingCap(listingCap + 2);
@@ -143,6 +149,7 @@ describe('AssetGovernance', function () {
       it('should able to change treasury', async () => {
         mockGovernance.totalAssets.returns(listingCap - 1);
         mockListingToken.transferFrom.returns(true);
+        mockListingToken.allowance.returns(listingFee);
 
         await assetGovernance.setTreasury(addr2.address);
         await assetGovernance.addAsset(mockAssetsToken.address);
