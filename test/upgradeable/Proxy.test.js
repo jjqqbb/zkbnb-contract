@@ -86,8 +86,9 @@ describe('Proxy', function () {
       const mockGovernanceNew = await MockGovernance.deploy();
       await mockGovernanceNew.deployed();
 
+      await proxyGovernance.upgradeTarget(mockGovernanceNew.address, ethers.constants.HashZero);
       expect(mockGovernanceNew.upgrade).to.be.delegatedFrom(proxyGovernance.address);
-      expect(mockGovernanceNew.upgrade).to.have.been.calledWith(addr1.address.toLowerCase());
+      expect(mockGovernanceNew.upgrade).to.have.been.calledWith(ethers.constants.HashZero);
     });
 
     it('upgradeTarget event', async function () {
