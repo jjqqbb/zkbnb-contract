@@ -86,10 +86,26 @@ describe('Proxy', function () {
       const mockGovernanceNew = await MockGovernance.deploy();
       await mockGovernanceNew.deployed();
 
-      await proxyGovernance.upgradeTarget(mockGovernanceNew.address, addr1.address);
-
       expect(mockGovernanceNew.upgrade).to.be.delegatedFrom(proxyGovernance.address);
       expect(mockGovernanceNew.upgrade).to.have.been.calledWith(addr1.address.toLowerCase());
+    });
+
+    it('upgradeTarget event', async function () {
+      const MockGovernance = await smock.mock('Governance', {
+        libraries: {
+          Utils: utils.address,
+        },
+      });
+      const mockGovernanceNew = await MockGovernance.deploy();
+      await mockGovernanceNew.deployed();
+
+      const upgrade = await proxyGovernance.upgradeTarget(mockGovernanceNew.address, addr1.address);
+      const receipt = await upgrade.wait();
+      const event = receipt.events.filter(({ event }) => {
+        return event === 'Upgraded';
+      });
+
+      expect(event[0]).to.be.not.null;
     });
 
     it('upgrade new `ZkBNBVerifier` target', async function () {
